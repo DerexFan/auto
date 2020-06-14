@@ -1,0 +1,25 @@
+# Based on Java 9 to build code
+FROM java:9
+
+# workplace
+#VOLUME ["./", "/workdir"]
+WORKDIR /appdir
+ 
+
+# 复制文件到工作目录
+COPY . /appdir
+# setup the environment for Java
+ENV PATH=$PATH:$JAVA_HOME/BIN
+ENV JRE_HOME=${JAVA_HOME}/JRE
+ENV CLASSPATH=.:${JAVA_HOME}/LIB:${JRE_HOME}/LIB
+
+# build code
+
+#RUN ["/usr/lib/jvm/java-9-openjdk-amd64/bin/javac", "simpleProgram.java"]
+#ENTRYPOINT ["/usr/lib/jvm/java-9-openjdk-amd64/bin/java", "simpleProgram"]
+ 
+
+# 运行
+
+#ENTRYPOINT ["/usr/lib/jvm/java-9-openjdk-amd64/bin/java", "Hello"]
+#RUN ["/usr/lib/jvm/java-9-openjdk-amd64/bin/java", "Hello"]

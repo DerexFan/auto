@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: jenkinstest1
+  name: jenkinstest1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jenkinstest1
+  strategy: {}
+  template:
+    metadata:
+      labels:
+        app: jenkinstest1
+    spec:
+      containers:
+      - name: jenkinstest1
+        image: jenkinsci/blueocean
+        # image: jenkins-with-plugin:v1
+        # image: jenkinswithplugin
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 8080
+          name: web
+          protocol: TCP
+        - containerPort: 5000
+          name: forclient
+          protocol: TCP
+        volumeMounts:
+        - name: jenkinshome
+          mountPath: /var/jenkins_home
+        env:
+          - name: DOCKER_HOST
+            value: 10.0.2.15
+
+      volumes:
+      - name: jenkinshome
+        hostPath:
+          path: /home/jenkins_home
+          type: DirectoryOrCreate
