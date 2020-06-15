@@ -1,6 +1,6 @@
 FROM jenkinsci/blueocean
 #setup local repo in order to install software
-sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
 RUN apk add ansible
 RUN apk add sshpass
 
