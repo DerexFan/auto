@@ -1,7 +1,9 @@
 #!/bin/bash
 which kubectl
 if [ $? -ne 0 ]; then
+   echo ""
    echo "Please make sure your are running this script on Kubernetes platform"
+   eecho ""
    exit
 fi
 ##########################################
@@ -18,8 +20,23 @@ docker build -t jenkinsci/blueocean -f Dockerfile_jenkins
 kubectl create -f deployment_jenkins.yaml
 kubectl create -f deployJenkinsService.yaml
 
-echo "Please wailt a few minutes to be ready ..."
+echo "Please wailt a few seconds to be ready ..."
 sleep 10
+pod_status=`kubectl get pods  | grep jenkinstest1`
+if echo "${pod_status}" | grep -iq "running"; then
+   echo "the jenkins pod is running now"
+else
+  echo "seems the jenkins pod is not online, please wait ..."
+  sleep 10
+  pod_status=`kubectl get pods  | grep jenkinstest1`
+  if echo "${pod_status}" | grep -iq "running"; then
+     echo "the jenkins pod is running now"
+  else
+      echo "the jenkins pod is still NOT running, please check it ..."
+      exit
+  fi
+fi
+
 node=`kubectl get pods -o wide  | grep jenkinstest1 | awk '{print $7}'`
 ssh $node "groupadd -g 1000 jenkins && adduser -u 1000 -g 1000 jenkins"
 ssh $node  "chown jenkins:jenkins -R /home/jenkins_home"
@@ -36,6 +53,7 @@ wget http://${ipaddr}/jnlpJars/jenkins-cli.jar
 # tar xzv jenkins-cli.jar
 java -jar jenkins-cli.jar -s http://${ipaddr}:8080 -auth admin:88919ef0f67e44bba467cb43f3fb0574 install-plugin gradle
 # such as, java -jar jenkins-cli.jar -s http://10.44.0.1:8080 -auth admin:88919ef0f67e44bba467cb43f3fb0574 install-plugin gradle
+java -jar jenkins-cli.jar -s http://10.44.0.1:8080 -auth admin:88919ef0f67e44bba467cb43f3fb0574  create-job testcreatejob < config.xml
 
 2, create the pipline by hand and use the file, Jenkinsfile to do the build automatically.
 file name: Jenkinsfile
